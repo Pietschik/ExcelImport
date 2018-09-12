@@ -40,6 +40,7 @@ namespace ExcelImport
         static void CreateSPListItems(SPList list)
         {
             int i = 1;
+            string line = "";
             foreach (DataRow row in dt.Rows)
             {
                 SPListItem item = list.AddItem();
@@ -136,7 +137,13 @@ namespace ExcelImport
                     }                   
                 }                
                 item.Update();
-                ConsoleWrite(string.Format("Create Item {0} of {1}", i, dt.Rows.Count -1), ConsoleColor.Green);
+                
+                string backup = new string('\b', line.Length);
+                Console.Write(backup);
+                line = string.Format("Create Item {0} of {1}", i, dt.Rows.Count - 1);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write(line);
+                Console.ForegroundColor = ConsoleColor.White;
             }
 
         }
@@ -223,7 +230,7 @@ namespace ExcelImport
                             SPField field = list.Fields.GetField(columnName);
                             columnList.Add(new Column(columnName, i, field.Type));
                             dt.Columns.Add(columnName);
-                            ConsoleWrite(string.Format("Field [{0}] with the type [{1}] found in SharePoint list", columnName, field.Type), ConsoleColor.Green);
+                            ConsoleWrite(string.Format("Field [{0}] type of [{1}] found", columnName, field.Type), ConsoleColor.Green);
                         }
                         else
                         {
@@ -234,10 +241,16 @@ namespace ExcelImport
                     }
                     ConsoleWrite("Header creation completed", ConsoleColor.White);
                     ConsoleWrite("Start reading row values...", ConsoleColor.White);
-
+                    string line = "";
                     for (int i = startRow + 1; i <= endRow; i++)
                     {
-                        ConsoleWrite(string.Format("Current Row: {0}", i), ConsoleColor.White);
+                        string backup = new string('\b', line.Length);
+                        Console.Write(backup);
+                        line = string.Format("Current Row: {0}", i);
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write(line);
+                        
+                        
                         DataRow row = dt.NewRow();
                         bool rowIsNotEmpty = false;
 
@@ -260,7 +273,8 @@ namespace ExcelImport
                         }
 
                     }
-
+                    Console.WriteLine();
+                    ConsoleWrite("Start creating SharePoint ListItems", ConsoleColor.White);
                     CreateSPListItems(list);
                 }
             }
